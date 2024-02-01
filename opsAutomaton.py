@@ -1,4 +1,60 @@
 import itertools
+import auxAutomatonFunctions
+
+
+def mark_dependencies(pair, dependencies, matrix, visited_pairs):
+    # Base case: if the pair has already been visited, return
+    if pair in visited_pairs:
+        return
+
+    # Mark the given pair
+    matrix[pair[0]][pair[1]] = 1
+
+    # Mark the pair as visited
+    visited_pairs.add(pair)
+
+    # Recursively mark dependencies
+    for dependent_pair in dependencies[pair]:
+        mark_dependencies(dependent_pair, dependencies, visited_pairs)
+
+
+# Function that given an automaton returns it's minimized version
+def minimize_automaton(automaton):
+    auxAutomatonFunctions.remove_unreachable_states(automaton)
+    auxAutomatonFunctions.complete_automaton(automaton)
+
+    alphabet = automaton[0]
+    states = list(automaton[1])
+    final_states = automaton[3]
+    productions = automaton[4]
+
+    matrix = [[[] for _ in range(len(states))] for _ in range(len(states))]
+    dependencies = {pair: [] for pair in itertools.product(states, repeat=2)}
+
+
+    # For all states p that are final states, mark the pairs {p, q} where q is not a final state
+    for i in range(0,len(states)):
+        if states[i] in final_states:
+            for j in range(0,len(states)):
+                if states[j] not in final_states:
+                    matrix[i][j] = 1
+    
+    # For each pair {p, q} that wasnt marked before
+    for i in range(0,len(states)):
+        for j in range(0, len(states)):
+            pair = (states[i],states[j])
+            for symbol in alphabet:
+                destiny1 = productions[pair[0]][symbol]
+                destiny2 = productions[pair[1]][symbol]
+
+                if matrix[states.index(destiny1)][states.index(destiny2)] == 1:
+                    mark_dependencies((i,j), dependencies, matrix, set())
+                else:
+                    dependencies[(destiny1, destiny2)].append((i,j))
+    
+
+    return
+
 
 #  Function that given an automaton M and a list of words, returns all the words from the list
 # that belong to ACCEPT(M)
@@ -38,13 +94,6 @@ def simulate_automaton(automaton, word_list):
     return(accepted_words)
 
 
-#  Function that given an alphabet and a word length, generates all possible words
-# with word_length characters using the alphabet symbols
-def combinations(alphabet, word_length):
-    generator = itertools.product(*([alphabet] * word_length)) 
-    return [''.join(combination) for combination in generator]
-
-
 # Functions that checks if the language that a given automaton recognizes is empty
 def check_empty_language(automaton):
     alphabet = automaton[0]
@@ -52,7 +101,7 @@ def check_empty_language(automaton):
 
     # Generates all possible words with length lesser than the number of states of the automaton
     for word_length in range (0,num_states):
-        possible_words = combinations(alphabet, word_length)
+        possible_words = auxAutomatonFunctions.combinations(alphabet, word_length)
         
         for word in possible_words:
             accepted_word = simulate_automaton(automaton, [word])
