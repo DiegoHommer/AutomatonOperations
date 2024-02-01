@@ -3,19 +3,7 @@ import auxAutomatonFunctions
 
 
 def mark_dependencies(pair, dependencies, matrix, visited_pairs):
-    # Base case: if the pair has already been visited, return
-    if pair in visited_pairs:
-        return
-
-    # Mark the given pair
-    matrix[pair[0]][pair[1]] = 1
-
-    # Mark the pair as visited
-    visited_pairs.add(pair)
-
-    # Recursively mark dependencies
-    for dependent_pair in dependencies[pair]:
-        mark_dependencies(dependent_pair, dependencies, visited_pairs)
+    return
 
 
 # Function that given an automaton returns it's minimized version
@@ -52,7 +40,6 @@ def minimize_automaton(automaton):
                 else:
                     dependencies[(destiny1, destiny2)].append((i,j))
     
-
     return
 
 
