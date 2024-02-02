@@ -12,38 +12,44 @@ def read_file(file_name):
         return -1
 
 
-def read_automaton(stringao):
+def read_automaton(definition_string):
     # Reading automata name
+    stringao = definition_string
+    stringao = stringao.replace(' ', '')
+
     automata_name = stringao[0:stringao.find('=')]
-    stringao = stringao.removeprefix(automata_name + '={ {')       
-
-
+    stringao = stringao.removeprefix(automata_name + '={ {')
+    stringao = stringao.removeprefix(automata_name + '={')  
+    stringao = stringao.removeprefix('{')  
+   
     # Extracting the automaton alphabet from file string
     alphabet_string = stringao[0:stringao.find('}')]
-    alphabet_set = set(alphabet_string.split(', '))
+    alphabet_set = set(alphabet_string.split(','))
     stringao = stringao.removeprefix(alphabet_string + '},{')
     stringao = stringao.removeprefix(alphabet_string + '}, {')     
     stringao = stringao.removeprefix(alphabet_string + '},\n{')    
 
-
     # Extracting the automaton states from file string
     states_string = stringao[0:stringao.find('}')]
-    states_list = states_string.split(', ')
+    states_list = states_string.split(',')
     states_list.sort()
     stringao = stringao.removeprefix(states_string + '}, ')     
-    stringao = stringao.removeprefix(states_string + '},\n') 
+    stringao = stringao.removeprefix(states_string + '},\n')
+    stringao = stringao.removeprefix(states_string + '},') 
 
     # Extracting the automaton initial state from file string
     initial_state = stringao[0:stringao.find(',')]
     stringao = stringao.removeprefix(initial_state + ', {')
+    stringao = stringao.removeprefix(initial_state + ',{')
+    stringao = stringao.removeprefix(initial_state + ',\n{')
     initial_state_set = set([initial_state])
-
 
     # Extracting the automaton final states from file string
     final_states_string = stringao[0:stringao.find('}')]
-    final_states_set = set(final_states_string.split(', '))
+    final_states_set = set(final_states_string.split(','))
     stringao = stringao.removeprefix(final_states_string + '} }\np:\n')
-
+    stringao = stringao.removeprefix(final_states_string + '}}\np:\n')
+    
     # Extracting the automaton productions from file string
     productions_string_list = stringao.split('\n')
     productions_list = []
