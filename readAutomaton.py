@@ -1,11 +1,16 @@
 import numpy as np
 
 def read_file(file_name):
-    file = open(file_name,'r')
-    file_strings = file.readlines()
-    file.close()
-    stringao = ''.join(file_strings)
-    return stringao
+    try:
+        file = open(file_name,'r')
+        file_strings = file.readlines()
+        file.close()
+        stringao = ''.join(file_strings)
+        return stringao
+    except:
+        print(" File not found! Confirm if the input path is correct.\n")
+        return -1
+
 
 def read_automaton(stringao):
     # Reading automata name
@@ -16,19 +21,22 @@ def read_automaton(stringao):
     # Extracting the automaton alphabet from file string
     alphabet_string = stringao[0:stringao.find('}')]
     alphabet_set = set(alphabet_string.split(', '))
+    stringao = stringao.removeprefix(alphabet_string + '},{')
     stringao = stringao.removeprefix(alphabet_string + '}, {')     
     stringao = stringao.removeprefix(alphabet_string + '},\n{')    
 
 
     # Extracting the automaton states from file string
     states_string = stringao[0:stringao.find('}')]
-    states_set = set(states_string.split(', '))
+    states_list = states_string.split(', ')
+    states_list.sort()
     stringao = stringao.removeprefix(states_string + '}, ')     
     stringao = stringao.removeprefix(states_string + '},\n') 
 
     # Extracting the automaton initial state from file string
     initial_state = stringao[0:stringao.find(',')]
     stringao = stringao.removeprefix(initial_state + ', {')
+    initial_state_set = set([initial_state])
 
 
     # Extracting the automaton final states from file string
@@ -65,16 +73,16 @@ def read_automaton(stringao):
             
             # Makes a dictionary with each transition as a key and destiny state as the answer
             for production in aux_list:
-                transicao = production[1]
-                destino = production[2]
-                aux_dict[transicao] = destino
+                transition = production[1]
+                destiny = production[2]
+                aux_dict[transition] = destiny
 
             # Adds the state that wasnt on the dictionary as a key with answer being its transition dictionary
             productions_dict[origin_state] = aux_dict
             aux_dict = {}
             aux_list = []
 
-    return (alphabet_set, states_set, initial_state, final_states_set, productions_dict)
+    return (alphabet_set, states_list, initial_state_set, final_states_set, productions_dict)
 
 
 
