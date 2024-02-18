@@ -1,5 +1,3 @@
-import numpy as np
-
 def read_file(file_name):
     try:
         file = open(file_name,'r')

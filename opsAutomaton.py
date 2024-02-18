@@ -1,5 +1,4 @@
 import auxAutomatonFunctions
-import copy
 
 def mark_dependencies(index_pair, dependency_matrix, equivalence_matrix):
     # Mark the pair itself
@@ -29,8 +28,7 @@ def minimize_automaton(automaton):
     auxAutomatonFunctions.complete_automaton(automaton)
 
     alphabet = automaton[0]
-    states = copy.deepcopy(automaton[1])
-    initial_state = automaton[2]
+    states = automaton[1]
     final_states = automaton[3]
     productions = automaton[4]
 
@@ -98,16 +96,20 @@ def simulate_automaton(automaton, word_list):
     productions = automaton[4]
     
     accepted_words = []
+    added_empty = False
 
     # Simutating each word in word list running in automaton
     for word in word_list:
         state = initial_state
+        empty_word = False
         accept = True
         
         for symbol in word:
             if symbol not in alphabet:
-                # Invalid symbol -> REJECT
-                accept = False
+                # Invalid symbol -> Interpret as empty word
+                if initial_state not in final_states:
+                    accept = False
+                empty_word = True
                 break
             try:
                 # Jumps to the next state if possible
@@ -122,7 +124,11 @@ def simulate_automaton(automaton, word_list):
             accept = False
 
         if accept:
-            accepted_words.append(word)
+            if not empty_word:
+                accepted_words.append(word)
+            elif not added_empty:
+                accepted_words.append('\u03B5')
+                added_empty = True
 
     return(accepted_words)
 

@@ -52,6 +52,8 @@ while(True):
             print(" Input the path to the file with the list of words to be tested:")
             word_list_path = input()
             word_list = readAutomaton.read_file(word_list_path)
+        word_list = word_list.replace(' ', '')
+        word_list = word_list.replace('\n', '')
         word_list = word_list.split(',')
         accepted = opsAutomaton.simulate_automaton(minimized_automaton, word_list)
         print("\nAccepted Words:")

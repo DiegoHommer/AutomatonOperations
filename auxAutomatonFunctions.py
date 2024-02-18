@@ -219,7 +219,7 @@ def print_automaton(automaton):
         for symbol in alphabet:
             try:
                 next_state = productions[state][symbol]
-                print(f"  δ({state}, {symbol}) = {next_state}")
+                print(f"  δ({state},{symbol}) = {next_state}")
             except:
                 continue
     return
